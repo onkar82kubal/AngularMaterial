@@ -2,6 +2,7 @@ import { RepositoryService } from "./../../shared/repository.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { MatTableDataSource, MatSort, MatPaginator } from "@angular/material";
 import { Owner } from "../../_interface/owner.model";
+import { ErrorHandlerService } from "../../shared/error-handler.service";
 
 @Component({
   selector: "app-owner-list",
@@ -22,7 +23,10 @@ export class OwnerListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private repoService: RepositoryService) {}
+  constructor(
+    private repoService: RepositoryService,
+    private erroService: ErrorHandlerService
+  ) {}
 
   ngOnInit() {
     this.getAllOwners();
@@ -32,10 +36,20 @@ export class OwnerListComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  // public getAllOwners = () => {
+  //   this.repoService.getData("api/owner").subscribe(res => {
+  //     this.dataSource.data = res as Owner[];
+  //   });
+  // };
   public getAllOwners = () => {
-    this.repoService.getData("api/owner").subscribe(res => {
-      this.dataSource.data = res as Owner[];
-    });
+    this.repoService.getData("api/owner").subscribe(
+      res => {
+        this.dataSource.data = res as Owner[];
+      },
+      error => {
+        this.errorService.handleError(error);
+      }
+    );
   };
 
   public redirectToDetails = (id: string) => {};
